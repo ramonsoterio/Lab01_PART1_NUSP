@@ -4,3 +4,5 @@ src/status_report.md
 .idea
 src/__pycache__
 .env
+silver_report.md
+assets
