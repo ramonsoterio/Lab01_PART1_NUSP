@@ -6,3 +6,6 @@ src/__pycache__
 .env
 silver_report.md
 assets
+
+
+notebooks/.ipynb_checkpoints

@@ -3,19 +3,19 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import json
 
-from src.config import SILVER_DIR, STATS_DIR, ASSETS_DIR
+from src.config import SILVER_DIR, STATS_DIR, ASSETS_DIR, logger
 
 def generate_silver_report():
     ASSETS_DIR.mkdir(exist_ok=True)
 
-    print("Starting report generation...")
+    logger.info("Starting report generation...")
 
     try:
         orders = pd.read_parquet(SILVER_DIR / "orders.parquet")
         items = pd.read_parquet(SILVER_DIR / "order_items.parquet")
         payments = pd.read_parquet(SILVER_DIR / "order_payments.parquet")
     except Exception as e:
-        print(f"Error loading silver file: {e}")
+        logger.error(f"Error loading silver file: {e}")
         return
 
     # --- 2. GERAÇÃO DE VISUALIZAÇÕES ---
@@ -97,7 +97,7 @@ def generate_silver_report():
             f.write(f"### {title}\n")
             f.write(f"![{title}](assets/{img_path})\n\n")
 
-    print("Silver report generated.")
+    logger.info("Silver report generated.")
 
 
 if __name__ == "__main__":

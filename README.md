@@ -1,5 +1,7 @@
 # 📦 Olist E-commerce Data Pipeline
-Este projeto implementa um pipeline de dados ponta a ponta (ETL) para extrair, limpar e analisar os dados do marketplace Olist (maior plataforma de departamentos do Brasil). O pipeline segue a arquitetura de medalhão, processando dados da camada Raw (Bronze) para a Silver.
+Este projeto implementa um pipeline de dados ponta a ponta (ETL) para extrair, limpar e analisar os dados do marketplace Olist (maior plataforma de departamentos do Brasil). O pipeline segue a arquitetura de medalhão, processando dados da camada Raw (Bronze) para a Silver, e refinamento desses dados com tranformação para a camada Gold..
+
+
 
 ## 📍 Origem dos Dados
 Os dados são extraídos do [Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce) no Kaggle. O dataset contém informações reais de 100 mil pedidos de 2016 a 2018, com mais de 1 milhão de registros.
@@ -43,16 +45,24 @@ O projeto é orquestrado por um único ponto de entrada:
 
     $ python main.py
 
+E pode ser executado com docker-compose:
+    
+    $ docker-compose up --build
+
 ## 🏗️ Arquitetura do Pipeline
-1. Ingestão (download.py): Valida a autenticação e baixa os CSVs brutos para data/raw/. 
-2. Transformação (transform.py):
+1. Ingestão (Dowloader): Valida a autenticação e baixa os CSVs brutos para data/raw/. 
+2. Transformação (Transformer):
    - Converte CSV para Parquet (colunar e otimizado).
    - Padroniza nomes para snake_case.
-   - Trata valores ausentes e tipagem de datas.
+   - Trata valores ausentese tipagem de dados.
    - Gera metadados de integridade em data/silver/stats/. 
-3. Relatório (report.py): Gera visualizações automáticas e um documento Markdown com características dos dados.
+3. Relatório (Reporter): Gera visualizações automáticas e um documento Markdown com características dos dados.
+4. Carregamento (Loader)
+   - Carrega os parquets da camada silver;
+   - Executa regras de negócio moldando dados para posterior armazenamento em DB;
+   - Armazena os dados finais no DB.
 
-![img_1.png](img_1.png)
+![pipeline.png](pipeline.png)
 
 ## 📊 Dados Obtidos (Camada Silver)
 Após rodar o pipeline, você terá acesso aos seguintes dados higienizados:
@@ -82,4 +92,9 @@ Visualização: Seaborn & Matplotlib
 
 Configuração: Python-Dotenv
 
-Armazenamento: Apache Parquet
+Armazenamento: Apache Parquet, PostgreSQL
+
+
+### Descritivo: camada gold
+
+![gold.png](gold.png)

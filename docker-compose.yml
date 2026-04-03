@@ -1,12 +1,47 @@
 version: '3.8'
 
 services:
-  olist-pipeline:
+  olist_pipeline:
     build: .
     container_name: olist_etl
+    depends_on:
+      olist_db:
+        condition: service_healthy
+    environment:
+      DB_URL: "postgresql://admin:admin@olist_db:5432/gold_db"
+      DATA_PATH: "/data/silver"
     env_file:
       - .env
     volumes:
       - .:/app
       - ./data:/app/data
       - ./assets:/app/assets
+    networks:
+      - data_pipeline
+
+  olist_db:
+    image: postgres:15-alpine
+    container_name: postgres_gold
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: gold_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./scripts/db/init_db.sql:/docker-entrypoint-initdb.d/init_db.sql:ro
+    networks:
+      - data_pipeline
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d gold_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  data_pipeline:
+    driver: bridge
+
+volumes:
+  pg_data:

@@ -1,6 +1,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import logging
 
 BASE_DIR = Path(__file__).parent.parent
 env_path = BASE_DIR / ".env"
@@ -28,3 +29,8 @@ TABLE_MAP = {
     "olist_geolocation_dataset": "geolocation",
     "product_category_name_translation": "category_translation"
 }
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s - %(message)s')
+logger = logging.getLogger(__name__)
+
+DB_URL = os.getenv('DB_URL', 'postgresql://admin:admin@localhost:5432/olist_db')
